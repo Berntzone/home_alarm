@@ -97,13 +97,14 @@ def motion_detection():
         if pir.detection()==pir.motionDetected:
             trigger_time = time.time()
             print(readable_time(time.localtime()) + " [Motion Detected]")
+
             post_var("alarm_trigger", 0)                # Ugly code, but makes graph on ubidots nice :)
             time.sleep(1)
-            post_var("alarm_trigger", trigger_time)     # send data to UBIDOTS
+            post_var("alarm_trigger", trigger_time)     # Send data to UBIDOTS.
             time.sleep(1)
-            post_var("alarm_trigger", 0)                # reset alarm on ubidots to allow events to trigger
-            
-            time.sleep(LOCKOUT)                         # avoid multiple triggers of one event
+            post_var("alarm_trigger", 0)                # Reset alarm on ubidots to allow events to trigger.
+
+            time.sleep(LOCKOUT)                         # Avoid multiple triggers of one event
 
         elif pir.detection()==pir.noMotionDetected:
             pass
@@ -114,27 +115,29 @@ def sleep_if_disabled():
     memory = 1
 
     while not alarm_enabled():
-        if memory == 1:         # Audio confirmation that the alarm has been turned off.
+
+        if memory == 1:                                               # Audio confirmation that the alarm has been turned off.
             sound.play_mario_short()
             memory = 0
 
-        post_var("status", 0)   # Publishes OFF state and sleeps for DISABLED_DELAY seconds.
+        post_var("status", 0)                                         # Publishes OFF state and sleeps for DISABLED_DELAY seconds.
         print(readable_time(time.localtime()) + " [Alarm OFF]")
 
         time.sleep(SLEEP_DELAY)
 
-    if memory == 0:             # Audio confirmation that the alarm has been turned on.
+    if memory == 0:                                                   # Audio confirmation that the alarm has been turned on.
         sound.play()
 
-    post_var("status", 1)       # Publishes ON state
+    post_var("status", 1)                                             # Publishes ON state.
     print(readable_time(time.localtime()) + " [Alarm ON]")
 
 
 
 ### --- MAIN --- ###
 
-# Syncing system clock
+# Syncing system clock to the internet
 sync_time()
+
 
 # Startup (mainly debugging)
 if alarm_enabled():
@@ -146,16 +149,16 @@ print("Initializing PIR sensor... (" + str(INIT_DELAY) + " seconds)")
 time.sleep(INIT_DELAY)
 print("Starting up. \n")
 
+
 # Motion detection loop
-varv = 1        # Variable to keep track of loops
+loops = 1
 while True:
     motion_detection()
 
-    if varv==100:
-        # Subscribing and publishing to Ubidots server every 10 seconds
+    if loops==100:                                                    # Subscribing and publishing to Ubidots server every 10 seconds.
         sleep_if_disabled()
-        varv = 1
+        loops = 1
     else:
-        varv += 1
+        loops += 1
 
-    time.sleep(0.1)
+    time.sleep(0.1)                                                   # Sensor delay when enabled. 1/scan frequency.
