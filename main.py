@@ -3,8 +3,9 @@ from network import WLAN
 import urequests as requests
 import machine
 import time
-import _thread
-
+#import _thread         # Tried at first, but realized MicroPython's multithread functionality is "highly experimental"
+                        # and couldn't do what I wanted. 3/10 would not recommend. Unpleasant experience.
+                        # https://docs.micropython.org/en/latest/library/_thread.html
 import keys
 import sound
 import pir
@@ -77,15 +78,15 @@ def post_var(topic, value):
 
 
 # Function for listening for commands from the Ubidots server
-def listen():
-    r = requests.get(url=(keys.url + keys.sub), headers=keys.headers)
+def listen(topic):
+    r = requests.get(url=(keys.url + topic), headers=keys.headers)
     state = int(r.json())
     return state
 
 
 # Checks control variable on Ubidots and returns True or False
 def alarm_enabled():
-    if listen()==1:
+    if listen(keys.sub)==1:
         return True
     else:
         return False
@@ -96,11 +97,12 @@ def motion_detection():
         if pir.detection()==pir.motionDetected:
             trigger_time = time.time()
             print(readable_time(time.localtime()) + " [Motion Detected]")
-            post_var("alarm_trigger", 0)                # make graph nice
+            post_var("alarm_trigger", 0)                # Ugly code, but makes graph on ubidots nice :)
             time.sleep(1)
             post_var("alarm_trigger", trigger_time)     # send data to UBIDOTS
             time.sleep(1)
             post_var("alarm_trigger", 0)                # reset alarm on ubidots to allow events to trigger
+            
             time.sleep(LOCKOUT)                         # avoid multiple triggers of one event
 
         elif pir.detection()==pir.noMotionDetected:
