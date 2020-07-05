@@ -98,13 +98,13 @@ def motion_detection():
             trigger_time = time.time()
             print(readable_time(time.localtime()) + " [Motion Detected]")
 
-            post_var("alarm_trigger", 0)                # Ugly code, but makes graph on ubidots nice :)
+            post_var("alarm_trigger", 0)                              # Ugly code, but makes graph on ubidots nice :)
             time.sleep(1)
-            post_var("alarm_trigger", trigger_time)     # Send data to UBIDOTS.
+            post_var("alarm_trigger", trigger_time)                   # Send data to UBIDOTS.
             time.sleep(1)
-            post_var("alarm_trigger", 0)                # Reset alarm on ubidots to allow events to trigger.
+            post_var("alarm_trigger", 0)                              # Reset alarm on ubidots to allow events to trigger.
 
-            time.sleep(LOCKOUT)                         # Avoid multiple triggers of one event
+            time.sleep(LOCKOUT)                                       # Avoid multiple triggers of one event
 
         elif pir.detection()==pir.noMotionDetected:
             pass
