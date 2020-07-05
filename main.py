@@ -48,8 +48,7 @@ def readable_time(input):
     else:
         minute = str(input[4])
 
-    output = str(year + "-" + month + "-" + day + " " + hour + ":" + minute)
-    return output
+    return str(year + "-" + month + "-" + day + " " + hour + ":" + minute)
 
 
 # Builds the json to send the request
