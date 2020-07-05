@@ -31,8 +31,8 @@ def sync_time():
         if not rtc.synced():
             print("Failed to sync time. Trying again...")
 
-    #time.timezone(3600) # adjust for local time zone (Sweden Winter time)
-    time.timezone(7200)  # adjust for local time zone (Sweden Summer time)
+    #time.timezone(3600)                                        # adjust for local time zone (Sweden Winter time)
+    time.timezone(7200)                                         # adjust for local time zone (Sweden Summer time)
     print("Time synced to: " + neat_time(time.localtime()))
 
 
@@ -125,7 +125,7 @@ def sleep_if_disabled():
             memory = 0
 
         if j == (PUB_DELAY/10):
-            post_var("status", 0)                       # Publishes OFF state every 60 seconds when off.
+            post_var("status", 0)                       # Publishes OFF state every PUB_DELAY seconds when off.
             print(neat_time(time.localtime()) + " [Alarm OFF]")
             j = 1
         else:
@@ -161,10 +161,10 @@ i = 1
 while True:
     motion_detection()
 
-    if i%(10*10)==0:                                    # Subscribing to Ubidots server every 10 seconds. (Limit: every 2s)
+    if i%(10*SUB_DELAY)==0:                             # Subscribing to Ubidots server every 10 seconds. (Limit: every 2s)
         sleep_if_disabled()                             # Enters sleep loop if state is disabled.
 
-    if i==(10*PUB_DELAY):                                      # Publishes ON state every 60 seconds when on.
+    if i==(10*PUB_DELAY):                               # Publishes ON state every PUB_DELAY seconds when on.
         post_var("status", 1)                           # Ubidots STEM has publishing limit of 4000 dots/day (every 22s)
         print(neat_time(time.localtime()) + " [Alarm ON]")
         i = 1
