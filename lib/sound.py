@@ -1,5 +1,6 @@
 #Based on http://wiki.micropython.org/Play-Tone
 import time
+import machine
 from machine import Pin,  PWM
 
 # define frequency for each tone
@@ -109,16 +110,38 @@ mario = [E7, E7, 0, E7, 0, C7, E7, 0, G7, 0, 0, 0, G6, 0, 0, 0, C7, 0, 0, G6, 0,
 
 mario_short = [E7, E7, 0, E7, 0, C7, E7, 0, G7, 0, 0, 0, G6, 0]
 
+# Plays a short, two-note sound
 def play():
     sound = [G6, D7, 0]
     for i in sound:
        if i == 0:
            ch.duty_cycle(0)
        else:
-           tim=PWM(0, frequency=i)  # change frequency for change tone
+           tim=PWM(0, frequency=i)  # change frequency to change tone
            ch.duty_cycle(0.10)
        time.sleep(0.150)
 
+def mode_change(arg):
+    mode0 = [D7, G6, 0]
+    mode1 = [G6, 0, 0, 0, 0, 0, G6, D7, 0]
+    mode2 = [G6, 0, G6, 0, 0, 0, 0 , 0, G6, D7, 0]
+    mode3 = [G6, 0, G6, 0, G6, 0, 0, 0, 0, 0, G6, D7, 0]
+    mode_sounds = (mode0, mode1, mode2, mode3)
+
+    for i in mode_sounds[arg]:
+       if i == 0:
+           ch.duty_cycle(0)
+       else:
+           tim=PWM(0, frequency=i)          # change frequency to change tone
+           ch.duty_cycle(0.10)
+       time.sleep(0.150)
+
+    state = machine.disable_irq()
+    print("Change is hard. (10s sleep)")    # Preventing alarm from going off directly after changing
+    time.sleep(10)                          # 10 seconds of sleep before mode starts
+    machine.enable_irq(state)
+
+# Plays all notes in order
 def play_all_notes():
     for i in note:
        print(i)
@@ -126,20 +149,24 @@ def play_all_notes():
        ch.duty_cycle(0.30)
        time.sleep(0.3)
 
+
+# Play Super Mario song
 def play_mario():
     for i in mario:
         if i == 0:
             ch.duty_cycle(0)
         else:
-            tim=PWM(0, frequency=i)  # change frequency for change tone
+            tim=PWM(0, frequency=i)  # change frequency to change tone
             ch.duty_cycle(0.50)
         time.sleep(0.150)
 
+
+# Plays the first part of the Super Mario song
 def play_mario_short():
     for i in mario_short:
         if i == 0:
             ch.duty_cycle(0)
         else:
-            tim=PWM(0, frequency=i)  # change frequency for change tone
+            tim=PWM(0, frequency=i)  # change frequency to change tone
             ch.duty_cycle(0.50)
         time.sleep(0.150)
