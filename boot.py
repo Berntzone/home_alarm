@@ -20,11 +20,12 @@ wlan.antenna(WLAN.INT_ANT)
 wlan.connect(keys.ssid, auth=(WLAN.WPA2, keys.ssid_pass), timeout=5000)
 
 # Connecting to WiFi
+print("\n")
 while not wlan.isconnected ():
     print("Connecting to WiFi...")
     time.sleep(1)
     #machine.idle()
-print("Connected to Wifi \n")
+print("[Connected to Wifi] \n")
 time.sleep(0.5)
 
 machine.main('main.py')
